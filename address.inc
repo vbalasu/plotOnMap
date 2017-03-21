@@ -6,6 +6,7 @@ class Address extends Record {
 	public $state;
 	public $country;
 	public $zipcode;
+	//USAGE: $recordset->addRecord(new Address('343 Willowbrook dr', '', 'North Brunswick', 'NJ', '08902', 'USA'));
 	public function __construct($address1, $address2, $city, $state, $country, $zipcode) {
 		$this->address1 = $address1;
 		$this->address2 = $address2;
@@ -36,6 +37,7 @@ class Record {
 class RecordSet {
 	public $name;
 	public $records;
+	//USAGE: $recordset = new Recordset('Address');
 	public function __construct($name) {
 		if(!isset($name)) trigger_error("RecordSet must have a name");
 		else {
@@ -57,10 +59,11 @@ class RecordSet {
 		return(implode("\n", $output));
 	}
 	public function save() {
-		file_put_contents($this->name.'.serialize', gzcompress(serialize($this)));
+		file_put_contents($this->name.'.zip', gzencode(serialize($this)));
 	}
 	//Returns a Recordset object
+	//USAGE (from outside class): $recordset = Recordset::load('Address');
 	static public function load($name) {
-		return(unserialize(gzuncompress(file_get_contents("$name.serialize"))));
+		return(unserialize(gzdecode(file_get_contents("$name.zip"))));
 	}
 }
