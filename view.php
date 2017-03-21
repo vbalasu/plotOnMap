@@ -1,31 +1,63 @@
+<?php
+$heading = "Map";
+$height = 600;
+$zoomlevel = 9;
+$lat=40.7589542;
+$long=-73.9937348;
+$html = <<<EOT
 <!DOCTYPE html>
 <html>
   <head>
     <style>
-       #map {
-        height: 400px;
-        width: 100%;
-       }
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
     </style>
   </head>
   <body>
-    <h3>My Google Maps Demo</h3>
     <div id="map"></div>
     <script>
+      var map;
       function initMap() {
-        var uluru = {lat: -25.363, lng: 131.044};
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 4,
-          center: uluru
+          center: new google.maps.LatLng(2.8,-187.3),
+          mapTypeId: 'terrain'
         });
-        var marker = new google.maps.Marker({
-          position: uluru,
-          map: map
-        });
+
+        // Create a <script> tag and set the USGS URL as the source.
+        var script = document.createElement('script');
+        // This example uses a local copy of the GeoJSON stored at
+        // http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp
+        script.src = 'https://developers.google.com/maps/documentation/javascript/examples/json/earthquake_GeoJSONP.js';
+        document.getElementsByTagName('head')[0].appendChild(script);
+      }
+
+      // Loop through the results array and place a marker for each
+      // set of coordinates.
+      window.eqfeed_callback = function(results) {
+        for (var i = 0; i < results.features.length; i++) {
+          var coords = results.features[i].geometry.coordinates;
+          var latLng = new google.maps.LatLng(coords[1],coords[0]);
+          var marker = new google.maps.Marker({
+            position: latLng,
+            map: map
+          });
+        }
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaMoIJmKznICxX3UTEsazwLlSwUDjLO9Y&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRSjRa8MysdEUY-5QXlMB_L20wcDR2464&callback=initMap">
     </script>
   </body>
 </html>
+EOT;
+echo $html;
